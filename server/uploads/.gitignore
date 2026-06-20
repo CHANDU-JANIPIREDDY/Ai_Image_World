@@ -1,0 +1,3 @@
+# Local dev image uploads (Cloudinary fallback). Don't commit the files.
+*
+!.gitignore
