@@ -32,11 +32,11 @@ const envSchema = z.object({
 
   PORT: z.coerce.number().int().positive().default(5000),
 
-  // Database
-  MONGO_URI: z
-    .string()
-    .min(1, 'MONGO_URI is required')
-    .default('mongodb://127.0.0.1:27017/ai_image_world'),
+  // Database — required in production (no localhost default, so a missing value
+  // fails fast with a clear message instead of an ECONNREFUSED at connect time).
+  MONGO_URI: isProd
+    ? z.string().min(1, 'MONGO_URI is required in production (set your MongoDB Atlas connection string)')
+    : z.string().min(1).default('mongodb://127.0.0.1:27017/ai_image_world'),
 
   // JWT — access & refresh (API Spec §1.4)
   JWT_ACCESS_SECRET: requiredInProd(
@@ -50,10 +50,12 @@ const envSchema = z.object({
   JWT_ACCESS_EXPIRY: z.string().default('15m'),
   JWT_REFRESH_EXPIRY: z.string().default('7d'),
 
-  // Cloudinary (Phase 5) — required in production
-  CLOUDINARY_CLOUD_NAME: requiredInProd(z.string().min(1), ''),
-  CLOUDINARY_API_KEY: requiredInProd(z.string().min(1), ''),
-  CLOUDINARY_API_SECRET: requiredInProd(z.string().min(1), ''),
+  // Cloudinary — optional so the API can boot without it. Image uploads need
+  // these set (in production the local-disk fallback is disabled); without them
+  // the app runs fine and only the upload endpoint returns a clear error.
+  CLOUDINARY_CLOUD_NAME: z.string().default(''),
+  CLOUDINARY_API_KEY: z.string().default(''),
+  CLOUDINARY_API_SECRET: z.string().default(''),
 
   // CORS — comma-separated list of allowed client origins
   CLIENT_ORIGIN: z.string().default('http://localhost:5173'),
@@ -85,5 +87,11 @@ const env = Object.freeze({
   allowedOrigins: parsed.data.CLIENT_ORIGIN.split(',').map((o) => o.trim()),
   useMemoryDb: parsed.data.USE_MEMORY_DB === 'true',
 });
+
+// Non-fatal heads-up: uploads won't work in production without Cloudinary.
+if (env.isProd && !env.CLOUDINARY_CLOUD_NAME) {
+  // eslint-disable-next-line no-console
+  console.warn('⚠️  Cloudinary is not configured — image uploads will be unavailable.');
+}
 
 module.exports = env;
