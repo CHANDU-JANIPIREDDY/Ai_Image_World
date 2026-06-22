@@ -57,6 +57,11 @@ const envSchema = z.object({
   CLOUDINARY_API_KEY: z.string().default(''),
   CLOUDINARY_API_SECRET: z.string().default(''),
 
+  // Public base URL this API is reachable at (e.g. https://ai-image-world-server.onrender.com).
+  // Used to build absolute URLs for locally-served uploads. Optional: when unset,
+  // URLs are derived from the incoming request origin (req.protocol + host).
+  APP_URL: z.string().url().optional(),
+
   // CORS — comma-separated list of allowed client origins
   CLIENT_ORIGIN: z.string().default('http://localhost:5173'),
 

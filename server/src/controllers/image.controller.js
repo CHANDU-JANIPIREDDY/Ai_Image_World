@@ -11,6 +11,7 @@
 const asyncHandler = require('../utils/asyncHandler');
 const ApiResponse = require('../utils/ApiResponse');
 const imageService = require('../services/image.service');
+const { normalizeImagePayload, normalizeImageUrls } = require('../utils/assetUrl');
 
 const buildMeta = ({ total, page, limit }) => ({
   page,
@@ -25,7 +26,7 @@ const list = asyncHandler(async (req, res) => {
   const result = await imageService.getImages({ ...req.query, isAdmin });
   return ApiResponse.send(res, {
     message: 'Images retrieved',
-    data: result.images,
+    data: normalizeImagePayload(result.images, req),
     meta: buildMeta(result),
   });
 });
@@ -33,7 +34,10 @@ const list = asyncHandler(async (req, res) => {
 /** GET /images/trending  (Public) */
 const trending = asyncHandler(async (req, res) => {
   const data = await imageService.getTrendingImages(req.query);
-  return ApiResponse.send(res, { message: 'Trending images', data });
+  return ApiResponse.send(res, {
+    message: 'Trending images',
+    data: normalizeImagePayload(data, req),
+  });
 });
 
 /** GET /images/latest  (Public) */
@@ -41,7 +45,7 @@ const latest = asyncHandler(async (req, res) => {
   const result = await imageService.getLatestImages(req.query);
   return ApiResponse.send(res, {
     message: 'Latest images',
-    data: result.images,
+    data: normalizeImagePayload(result.images, req),
     meta: buildMeta(result),
   });
 });
@@ -52,7 +56,10 @@ const getBySlug = asyncHandler(async (req, res) => {
   const { image, related } = await imageService.getImageBySlug(req.params.slug, { isAdmin });
   return ApiResponse.send(res, {
     message: 'Image retrieved',
-    data: { ...image, related },
+    data: {
+      ...normalizeImageUrls(image, req),
+      related: normalizeImagePayload(related, req),
+    },
   });
 });
 

@@ -25,6 +25,7 @@ const uploadImage = asyncHandler(async (req, res) => {
   const result = await cloudinaryService.uploadImage(req.file.buffer, {
     folder,
     mimetype: req.file.mimetype,
+    req, // lets the local-disk fallback build an absolute URL from this request
   });
 
   return ApiResponse.send(res, {

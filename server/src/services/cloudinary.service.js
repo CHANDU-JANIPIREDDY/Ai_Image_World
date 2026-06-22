@@ -22,6 +22,7 @@ const crypto = require('crypto');
 const { cloudinary, isConfigured } = require('../config/cloudinary');
 const env = require('../config/env');
 const ApiError = require('../utils/ApiError');
+const { resolveBaseUrl } = require('../utils/assetUrl');
 
 /** Wrap a Buffer in a readable stream (single chunk). */
 function bufferToStream(buffer) {
@@ -44,20 +45,15 @@ function ensureUploadDir() {
   fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 }
 
-/** Absolute base URL the server is reachable at (for building local file URLs). */
-function serverBaseUrl() {
-  const base = process.env.APP_URL || `http://localhost:${env.PORT}`;
-  return base.replace(/\/+$/, '');
-}
-
 /** Persist a buffer to local disk and return the same response shape as Cloudinary. */
-function saveLocally(buffer, { mimetype } = {}) {
+function saveLocally(buffer, { mimetype, req } = {}) {
   ensureUploadDir();
   const ext = EXT_BY_MIME[mimetype] || 'png';
   const filename = `${Date.now()}-${crypto.randomBytes(6).toString('hex')}.${ext}`;
   fs.writeFileSync(path.join(UPLOAD_DIR, filename), buffer);
 
-  const url = `${serverBaseUrl()}/uploads/${filename}`;
+  // Base URL precedence: env.APP_URL → request origin → localhost (see assetUrl).
+  const url = `${resolveBaseUrl(req)}/uploads/${filename}`;
   return {
     imageUrl: url,
     thumbnailUrl: url, // no server-side transform locally
