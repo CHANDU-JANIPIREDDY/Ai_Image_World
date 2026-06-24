@@ -8,6 +8,8 @@
  * handles graceful shutdown + crash safety.
  *
  * Env validation lives in config/env.js; the Mongo connection in config/db.js.
+ * (The DNS resolver override needed for Atlas SRV lookups lives in config/db.js,
+ * before mongoose is required.)
  */
 
 const env = require('./config/env');

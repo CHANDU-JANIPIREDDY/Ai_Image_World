@@ -56,6 +56,16 @@
     @apply bg-brand-gradient bg-clip-text text-transparent;
   }
 
+  /* Fully hidden scrollbar — keeps wheel/touch scrolling, removes track + thumb.
+     Used by the prompt cards for a clean, premium look. */
+  .no-scrollbar {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/old Edge */
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none; /* Chrome/Safari/Edge */
+  }
+
   /* Slim, self-contained scrollbar for scroll-capped panels (prompt boxes).
      Scoped so it doesn't override the wider global page scrollbar. */
   .scroll-panel {

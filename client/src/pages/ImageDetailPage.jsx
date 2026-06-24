@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
   ArrowLeft,
   Eye,
@@ -34,7 +34,7 @@ const container = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
-    transition: { staggerChildren: 0.08, delayChildren: 0.04 },
+    transition: { staggerChildren: 0.06, delayChildren: 0.04 },
   },
 };
 
@@ -57,112 +57,93 @@ const fadeIn = {
 /*  Small building blocks                                                     */
 /* -------------------------------------------------------------------------- */
 
-/** A labeled metadata stat (views, copies, tool, date). */
-function Stat({ icon: Icon, children }) {
+/** A compact glass stat badge (views, copies, tool, date) — fills its grid cell. */
+function MetaChip({ icon: Icon, children }) {
   return (
-    <span className="inline-flex items-center gap-1.5 text-sm text-content-muted">
-      <Icon className="h-4 w-4 text-primary/80" aria-hidden="true" />
-      {children}
+    <span className="inline-flex w-full min-w-0 items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-2.5 py-2 text-xs font-medium text-content-muted backdrop-blur-glass">
+      <Icon className="h-3.5 w-3.5 shrink-0 text-primary/90" aria-hidden="true" />
+      <span className="truncate">{children}</span>
     </span>
   );
 }
 
 /**
- * ImageStage — the 9:16 hero with skeleton loader, fade-in, hover zoom and a
- * subtle continuous floating motion. The fixed aspect ratio guarantees zero
- * layout shift while the asset streams in.
+ * ImageStage — height-capped, aspect-preserving hero. The image is centered and
+ * never exceeds 500px tall on desktop (≈30% smaller than the old 9:16 frame),
+ * so it sits balanced beside the details instead of dominating the page.
+ * Features: shimmer skeleton, fade-in on load, soft shadow, gentle hover zoom.
  */
 function ImageStage({ src, alt }) {
   const [loaded, setLoaded] = useState(false);
   const [errored, setErrored] = useState(false);
-  const prefersReducedMotion = useReducedMotion();
 
-  const float = prefersReducedMotion
-    ? {}
-    : { y: [0, -10, 0], transition: { duration: 6, repeat: Infinity, ease: 'easeInOut' } };
+  if (errored) {
+    return (
+      <div className="mx-auto flex aspect-[3/4] w-full max-w-sm flex-col items-center justify-center gap-2 rounded-[20px] border border-white/10 bg-surface text-content-muted">
+        <ImageOff className="h-10 w-10" aria-hidden="true" />
+        <span className="text-sm">Image unavailable</span>
+      </div>
+    );
+  }
 
   return (
-    <motion.div variants={fadeIn} className="lg:sticky lg:top-24">
+    <motion.figure variants={fadeIn} className="group relative mx-auto w-fit max-w-full lg:mx-0">
       {/* Ambient glow behind the frame */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 -z-10 bg-glow-radial blur-2xl"
+        className="pointer-events-none absolute -inset-6 -z-10 bg-glow-radial opacity-70 blur-2xl"
       />
 
-      <motion.div
-        animate={float}
-        className="group relative aspect-[9/16] w-full overflow-hidden rounded-[24px] border border-white/10 bg-surface shadow-glass"
-      >
-        {/* Skeleton placeholder while the image streams in */}
-        <AnimatePresence>
-          {!loaded && !errored && (
-            <motion.div
-              key="skeleton"
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.4 }}
-              className="absolute inset-0"
-            >
-              <Skeleton className="h-full w-full rounded-[24px]" />
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {errored ? (
-          <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-content-muted">
-            <ImageOff className="h-10 w-10" aria-hidden="true" />
-            <span className="text-sm">Image unavailable</span>
-          </div>
-        ) : (
-          <img
-            src={src}
-            alt={alt}
-            loading="eager"
-            onLoad={() => setLoaded(true)}
-            onError={() => setErrored(true)}
-            className={cn(
-              'h-full w-full object-cover transition-[transform,opacity] duration-700 ease-out',
-              'group-hover:scale-[1.05]',
-              loaded ? 'opacity-100' : 'opacity-0'
-            )}
-          />
+      {/* Frosted glass frame the image sits on */}
+      <div className="relative rounded-[26px] glass-panel p-2.5 shadow-glass">
+        {/* Shimmer while the asset streams in — overlays the (invisible) image */}
+        {!loaded && (
+          <Skeleton className="absolute inset-2.5 h-auto w-auto rounded-[18px]" />
         )}
 
-        {/* Hover sheen — bottom-up gradient for a premium gallery feel */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+        <motion.img
+          src={src}
+          alt={alt}
+          loading="eager"
+          onLoad={() => setLoaded(true)}
+          onError={() => setErrored(true)}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: loaded ? 1 : 0 }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          className={cn(
+            'block h-auto max-h-[420px] w-auto max-w-full rounded-[18px] object-contain ring-1 ring-inset ring-white/10 sm:max-h-[520px]',
+            'transition-transform duration-500 ease-out group-hover:scale-[1.02]',
+            // Reserve space for the shimmer before the natural dimensions are known.
+            !loaded && 'min-h-[340px] w-full max-w-xs'
+          )}
         />
-        {/* Inner ring highlight */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 rounded-[24px] ring-1 ring-inset ring-white/10"
-        />
-      </motion.div>
-    </motion.div>
+      </div>
+    </motion.figure>
   );
 }
 
 /**
- * PromptPanel — premium "documentation panel": header bar, internally scrollable
- * monospace body with a fixed max-height (no page-height growth), custom slim
- * scrollbar, and an optional always-visible footer (e.g. the copy action).
+ * PromptPanel — premium "documentation panel": header bar + internally scrollable
+ * body. The card is a fixed 16:9 rectangle (height derived from its width, never
+ * from content length), so two panels placed side by side are perfectly equal.
+ * Body scrolls (hidden scrollbar) only when the content overflows.
  */
-function PromptPanel({ label, icon: Icon, text, maxHeightClass, tone = 'primary', footer }) {
+function PromptPanel({ label, icon: Icon, text, tone = 'primary' }) {
   const toneText = tone === 'muted' ? 'text-content-muted' : 'text-content/90';
   const charCount = text?.length ?? 0;
 
   return (
     <motion.section
       variants={fadeUp}
-      whileHover={{ y: -3 }}
+      whileHover={{ y: -2 }}
       transition={{ type: 'spring', stiffness: 300, damping: 26 }}
-      className="overflow-hidden rounded-[20px] glass-panel transition-shadow duration-300 hover:shadow-glow"
+      className="flex aspect-[16/9] flex-col overflow-hidden rounded-[20px] glass-panel transition-shadow duration-300 hover:shadow-glow"
     >
       {/* Header — stays put while the body scrolls */}
-      <header className="flex items-center justify-between gap-3 border-b border-white/10 bg-white/[0.03] px-5 py-3">
+      <header className="flex shrink-0 items-center justify-between gap-3 border-b border-white/[0.06] bg-white/[0.03] px-4 py-2.5">
         <div className="flex items-center gap-2">
           <Icon className="h-4 w-4 text-primary" aria-hidden="true" />
-          <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-content-muted">
+          <h2 className="text-[11px] font-semibold uppercase tracking-[0.18em] text-content-muted">
             {label}
           </h2>
         </div>
@@ -171,26 +152,17 @@ function PromptPanel({ label, icon: Icon, text, maxHeightClass, tone = 'primary'
         </span>
       </header>
 
-      {/* Scrollable body — fixed cap + slim custom scrollbar, never grows the page */}
-      <div
-        className={cn(
-          'scroll-panel overflow-y-auto overscroll-contain bg-black/20 px-5 py-4',
-          maxHeightClass
-        )}
-      >
-        <pre
+      {/* Scrollable body — fills the card, hidden scrollbar, no horizontal overflow */}
+      <div className="no-scrollbar min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain bg-black/20 px-4 py-3.5">
+        <p
           className={cn(
-            'whitespace-pre-wrap break-words font-mono text-[13px] leading-relaxed',
+            'whitespace-pre-wrap break-words font-sans text-[13px] leading-[1.6] [overflow-wrap:anywhere]',
             toneText
           )}
         >
-          {text}
-        </pre>
+          {text || '—'}
+        </p>
       </div>
-
-      {footer && (
-        <div className="border-t border-white/10 bg-white/[0.03] p-3">{footer}</div>
-      )}
     </motion.section>
   );
 }
@@ -218,15 +190,24 @@ export default function ImageDetailPage() {
   /* ----------------------------- Loading ----------------------------- */
   if (isLoading) {
     return (
-      <section className="mx-auto max-w-6xl px-6 py-12">
-        <div className="grid gap-10 lg:grid-cols-[minmax(0,420px)_1fr]">
-          <Skeleton className="aspect-[9/16] w-full rounded-[24px]" />
-          <div className="space-y-5">
+      <section className="mx-auto max-w-7xl px-6 py-10 sm:py-12">
+        <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,40fr)_minmax(0,60fr)]">
+          <Skeleton className="mx-auto h-[420px] w-full max-w-sm rounded-[20px] sm:h-[520px] lg:mx-0" />
+          <div className="space-y-4">
+            <Skeleton className="h-6 w-24 rounded-full" />
             <Skeleton className="h-9 w-3/4" />
-            <Skeleton className="h-4 w-1/2" />
-            <Skeleton className="h-7 w-28 rounded-full" />
-            <Skeleton className="h-64 w-full rounded-[20px]" />
-            <Skeleton className="h-44 w-full rounded-[20px]" />
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+              <Skeleton className="h-9 rounded-xl" />
+              <Skeleton className="h-9 rounded-xl" />
+              <Skeleton className="h-9 rounded-xl" />
+              <Skeleton className="h-9 rounded-xl" />
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Skeleton className="aspect-[16/9] rounded-[20px]" />
+              <Skeleton className="aspect-[16/9] rounded-[20px]" />
+            </div>
+            <Skeleton className="h-11 w-full rounded-xl" />
+            <Skeleton className="h-7 w-40 rounded-lg" />
           </div>
         </div>
       </section>
@@ -273,90 +254,88 @@ export default function ImageDetailPage() {
         type="article"
       />
 
-      <section className="mx-auto max-w-6xl px-6 py-10 sm:py-12">
+      <section className="mx-auto max-w-7xl px-6 py-10 sm:py-12">
         {/* Back link */}
         <motion.div initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }}>
           <Link
             to={category?.slug ? `/category/${category.slug}` : '/categories'}
-            className="mb-8 inline-flex items-center gap-1.5 text-sm text-content-muted transition-colors hover:text-content"
+            className="mb-6 inline-flex items-center gap-1.5 text-sm text-content-muted transition-colors hover:text-content"
           >
             <ArrowLeft className="h-4 w-4" /> {category?.name || 'Categories'}
           </Link>
         </motion.div>
 
-        {/* Main split layout: image left, content right; stacks on mobile */}
+        {/* Main split layout: image 42% left, details 58% right; stacks on mobile */}
         <motion.div
           variants={container}
           initial="hidden"
           animate="show"
-          className="grid gap-10 lg:grid-cols-[minmax(0,420px)_1fr] lg:items-start"
+          className="grid items-start gap-8 lg:grid-cols-[minmax(0,40fr)_minmax(0,60fr)]"
         >
           {/* ----------------------------- Image ---------------------------- */}
-          <div className="relative">
+          <div className="relative lg:pt-1">
             <ImageStage src={image.imageUrl} alt={image.title} />
           </div>
 
           {/* ---------------------------- Details --------------------------- */}
-          <div className="min-w-0 space-y-6">
-            {/* Title + meta */}
-            <motion.div variants={fadeUp}>
-              <h1 className="text-2xl font-bold leading-tight tracking-tight sm:text-3xl lg:text-4xl">
+          <div className="min-w-0 space-y-5">
+            {/* Category kicker + title + 4-up stat grid */}
+            <motion.div variants={fadeUp} className="space-y-3">
+              {category?.name && (
+                <Link to={`/category/${category.slug}`} className="inline-block">
+                  <Badge variant="primary" className="transition-transform hover:scale-105">
+                    {category.name}
+                  </Badge>
+                </Link>
+              )}
+
+              <h1 className="text-2xl font-bold leading-tight tracking-tight md:text-3xl">
                 {image.title}
               </h1>
 
-              <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2">
-                <Stat icon={Eye}>{formatCount(image.views)} views</Stat>
-                <Stat icon={Copy}>{formatCount(image.promptCopyCount)} copies</Stat>
-                {image.sourceAiTool && <Stat icon={Wand2}>{image.sourceAiTool}</Stat>}
-                {image.createdAt && (
-                  <Stat icon={Calendar}>
-                    {formatMonthYear(image.publishedAt || image.createdAt)}
-                  </Stat>
-                )}
+              {/* Stats — equal-width badges; single row on desktop, 2×2 on mobile */}
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                <MetaChip icon={Eye}>{formatCount(image.views)} views</MetaChip>
+                <MetaChip icon={Copy}>{formatCount(image.promptCopyCount)} copies</MetaChip>
+                <MetaChip icon={Wand2}>{image.sourceAiTool || '—'}</MetaChip>
+                <MetaChip icon={Calendar}>
+                  {image.createdAt
+                    ? formatMonthYear(image.publishedAt || image.createdAt)
+                    : '—'}
+                </MetaChip>
               </div>
-
-              {category?.name && (
-                <div className="mt-4">
-                  <Link to={`/category/${category.slug}`}>
-                    <Badge variant="primary" className="transition-transform hover:scale-105">
-                      {category.name}
-                    </Badge>
-                  </Link>
-                </div>
-              )}
             </motion.div>
 
-            {/* Prompt — capped height, internal scroll, sticky copy footer */}
-            <PromptPanel
-              label="Prompt"
-              icon={Sparkles}
-              text={image.prompt}
-              maxHeightClass="max-h-[500px]"
-              footer={
-                <CopyPromptButton
-                  prompt={image.prompt}
-                  imageId={image._id}
-                  className="w-full"
-                />
-              }
-            />
+            {/* Prompt + Negative Prompt — 50/50 16:9 cards filling the column */}
+            <div
+              className={cn('grid gap-4', image.negativePrompt && 'sm:grid-cols-2')}
+            >
+              <PromptPanel label="Prompt" icon={Sparkles} text={image.prompt} />
 
-            {/* Negative prompt — same behavior, shorter cap */}
-            {image.negativePrompt && (
-              <PromptPanel
-                label="Negative Prompt"
-                icon={Ban}
-                text={image.negativePrompt}
-                tone="muted"
-                maxHeightClass="max-h-[350px]"
+              {image.negativePrompt && (
+                <PromptPanel
+                  label="Negative Prompt"
+                  icon={Ban}
+                  text={image.negativePrompt}
+                  tone="muted"
+                />
+              )}
+            </div>
+
+            {/* Copy action */}
+            <motion.div variants={fadeUp}>
+              <CopyPromptButton
+                prompt={image.prompt}
+                imageId={image._id}
+                className="w-full"
               />
-            )}
+            </motion.div>
 
             {/* Tags */}
             {image.tags?.length > 0 && (
               <motion.div variants={fadeUp}>
-                <h2 className="mb-3 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-content-muted">
-                  <Tag className="h-4 w-4" /> Tags
+                <h2 className="mb-2.5 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-content-muted">
+                  <Tag className="h-3.5 w-3.5" /> Tags
                 </h2>
                 <div className="flex flex-wrap gap-2">
                   {image.tags.map((tag) => (

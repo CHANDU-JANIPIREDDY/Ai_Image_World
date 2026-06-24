@@ -7,9 +7,19 @@
  * event listeners, and connect/disconnect helpers. Kept separate from
  * server.js so the DB layer is reusable by tests and the seed script.
  */
+const dns = require('dns');
+const env = require('./env'); // runs dotenv + validation; safe (does not require mongoose)
+
+// DNS override — MUST run before `require('mongoose')`, mirroring test-db.js.
+// On some Windows/VPN setups Node's default c-ares resolver returns
+// `querySrv ECONNREFUSED` for the Atlas SRV record even though `nslookup`
+// succeeds. Forcing public resolvers fixes the `mongodb+srv://` lookup.
+// Dev-only so production keeps its platform resolver (which already works).
+if (!env.isProd) {
+  dns.setServers(['8.8.8.8', '1.1.1.1']);
+}
 
 const mongoose = require('mongoose');
-const env = require('./env');
 
 // Fail loudly on queries against fields not in the schema.
 mongoose.set('strictQuery', true);
@@ -67,13 +77,19 @@ async function startMemoryServer() {
   console.log('🧪 Using in-memory MongoDB (ephemeral — data resets on restart)');
 }
 
+// TEMP (debugging): in-memory fallback is DISABLED so MongoDB Atlas is the only
+// database in every environment. A bad URI / DNS / network issue now throws
+// immediately instead of being masked by the memory server. Flip this back to
+// `true` to restore the dev fallback once Atlas connectivity is confirmed.
+const ALLOW_MEMORY_FALLBACK = false;
+
 async function connectDB() {
   if (mongoose.connection.readyState === 1) {
     return mongoose; // already connected
   }
 
-  // Explicit dev flag — go straight to in-memory.
-  if (env.useMemoryDb) {
+  // Explicit dev flag — go straight to in-memory (only when fallback is enabled).
+  if (ALLOW_MEMORY_FALLBACK && env.useMemoryDb) {
     await startMemoryServer();
     return mongoose;
   }
@@ -82,9 +98,8 @@ async function connectDB() {
     connecting = true; // suppress duplicate error-event logging while connecting
     await mongoose.connect(env.MONGO_URI, connectionOptions);
   } catch (err) {
-    // Production must fail fast; development falls back to in-memory so the
-    // app runs without a local MongoDB install.
-    if (env.isProd) throw err;
+    // Fail fast in production, and (while debugging) in development too.
+    if (env.isProd || !ALLOW_MEMORY_FALLBACK) throw err;
     // eslint-disable-next-line no-console
     console.warn(`⚠️  Could not reach MongoDB (${err.message}).`);
     // eslint-disable-next-line no-console

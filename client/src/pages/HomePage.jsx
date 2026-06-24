@@ -7,6 +7,7 @@ import { Seo } from '@/components/common/Seo';
 import { ImageCard } from '@/components/common/ImageCard';
 import { ImageGrid } from '@/components/common/ImageGrid';
 import { CategoryCard } from '@/components/common/CategoryCard';
+import { CreatedWithAIModelsSection } from '@/components/common/CreatedWithAIModelsSection';
 import { EmptyState } from '@/components/common/EmptyState';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { Button } from '@/components/ui/Button';
@@ -23,9 +24,10 @@ const fadeUp = {
 /** Section heading with an optional "view all" link. */
 function SectionHeader({ icon: Icon, title, to, linkLabel = 'View all' }) {
   return (
-    <div className="mb-6 flex items-center justify-between">
-      <h2 className="flex items-center gap-2 text-2xl font-semibold">
-        {Icon && <Icon className="h-6 w-6 text-primary" />} {title}
+    <div className="mb-4 flex items-center justify-between md:mb-6">
+      <h2 className="flex items-center gap-2 text-xl font-semibold leading-snug md:text-3xl md:font-bold">
+        {Icon && <Icon className="h-5 w-5 text-primary md:h-7 md:w-7" />}
+        <span className="gradient-text">{title}</span>
       </h2>
       {to && (
         <Link
@@ -65,7 +67,7 @@ export default function HomePage() {
 
   return (
     <>
-      <Seo description="Browse thousands of AI-generated images and copy professional prompts." />
+      <Seo description="Explore thousands of stunning AI-generated images and copy production-ready prompts — all in one beautifully curated gallery." />
 
       {/* ─────────────────── Hero — butterfly video + centered title ─────────────────── */}
       <section className="relative h-screen min-h-screen w-full overflow-hidden">
@@ -96,24 +98,31 @@ export default function HomePage() {
             initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-            className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl [text-shadow:0_0_28px_rgba(255,255,255,0.35)]"
+            className="text-[30px] font-extrabold leading-[1.15] tracking-tight text-white sm:text-4xl md:text-7xl md:leading-tight [text-shadow:0_2px_40px_rgba(124,58,237,0.45)]"
           >
-            AI Image World
+            AI Image{' '}
+            <span className="bg-gradient-to-r from-primary-hover via-fuchsia-400 to-secondary bg-clip-text text-transparent">
+              World
+            </span>
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.3, ease: 'easeOut' }}
-            className="mt-4 max-w-[700px] text-sm tracking-wide text-white/70 sm:text-base"
+            className="mt-3 max-w-[640px] text-sm font-light leading-relaxed tracking-wide text-white/80 md:mt-5 md:text-lg"
           >
-            Explore the world&apos;s most inspiring AI-generated visuals.
+            Where imagination meets intelligence — discover the world&apos;s most
+            inspiring AI art.
           </motion.p>
         </div>
       </section>
 
+      {/* ───────────────────── Created With AI Models ───────────────────── */}
+      <CreatedWithAIModelsSection />
+
       {/* ───────────────────── Featured Categories ───────────────────── */}
-      <motion.section {...fadeUp} className="mx-auto max-w-7xl px-6 py-10">
-        <SectionHeader icon={Sparkles} title="Featured Categories" to="/categories" />
+      <motion.section {...fadeUp} className="mx-auto max-w-7xl px-6 py-8 md:py-10">
+        <SectionHeader icon={Sparkles} title="Explore by Category" to="/categories" />
         {categories.isLoading ? (
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
             {Array.from({ length: 8 }).map((_, i) => (
@@ -123,7 +132,11 @@ export default function HomePage() {
         ) : categories.isError ? (
           <ErrorBlock message="Couldn't load categories." onRetry={categories.refetch} />
         ) : featuredCategories.length === 0 ? (
-          <EmptyState icon={ImageOff} title="No categories yet" message="Check back soon." />
+          <EmptyState
+            icon={ImageOff}
+            title="Categories coming soon"
+            message="We're curating collections — check back shortly."
+          />
         ) : (
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
             {featuredCategories.map((c) => (
@@ -134,8 +147,8 @@ export default function HomePage() {
       </motion.section>
 
       {/* ───────────────────── Trending Images ───────────────────── */}
-      <motion.section {...fadeUp} className="mx-auto max-w-7xl px-6 py-10">
-        <SectionHeader icon={TrendingUp} title="Trending Now" to="/search?q=trending" />
+      <motion.section {...fadeUp} className="mx-auto max-w-7xl px-6 py-8 md:py-10">
+        <SectionHeader icon={TrendingUp} title="Trending Now" to="/trending" linkLabel="See all" />
         {trending.isLoading ? (
           <div className="flex gap-4 overflow-hidden">
             {Array.from({ length: 6 }).map((_, i) => (
@@ -145,9 +158,13 @@ export default function HomePage() {
         ) : trending.isError ? (
           <ErrorBlock message="Couldn't load trending images." onRetry={trending.refetch} />
         ) : trendingImages.length === 0 ? (
-          <EmptyState icon={ImageOff} title="Nothing trending yet" message="Be the first to explore." />
+          <EmptyState
+            icon={ImageOff}
+            title="Nothing trending yet"
+            message="Popular images will appear here as the community explores."
+          />
         ) : (
-          <div className="-mx-2 flex gap-4 overflow-x-auto px-2 pb-2">
+          <div className="no-scrollbar -mx-2 flex gap-4 overflow-x-auto px-2 pb-2">
             {trendingImages.map((image) => (
               <ImageCard
                 key={image._id || image.id}
@@ -160,15 +177,15 @@ export default function HomePage() {
       </motion.section>
 
       {/* ───────────────────── Latest (Infinite Masonry) ───────────────────── */}
-      <motion.section {...fadeUp} className="mx-auto max-w-7xl px-6 py-10">
-        <SectionHeader icon={Clock} title="Latest Images" />
+      <motion.section {...fadeUp} className="mx-auto max-w-7xl px-6 py-8 md:py-10">
+        <SectionHeader icon={Clock} title="Fresh Off the Canvas" />
         {latest.isError ? (
           <ErrorBlock message="Couldn't load the latest images." onRetry={latest.refetch} />
         ) : !latest.isLoading && latestImages.length === 0 ? (
           <EmptyState
             icon={ImageOff}
-            title="No images yet"
-            message="New AI artwork will appear here as it's published."
+            title="The gallery is just getting started"
+            message="Fresh AI artwork will appear here as it's published."
           />
         ) : (
           <ImageGrid
