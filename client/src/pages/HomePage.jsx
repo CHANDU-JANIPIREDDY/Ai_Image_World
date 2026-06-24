@@ -1,12 +1,12 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { TrendingUp, Sparkles, Clock, ArrowRight, AlertCircle, ImageOff } from 'lucide-react';
+import { TrendingUp, Clock, ArrowRight, AlertCircle, ImageOff } from 'lucide-react';
 
 import heroVideo from '@/assets/Homepage.mp4';
 import { Seo } from '@/components/common/Seo';
 import { ImageCard } from '@/components/common/ImageCard';
 import { ImageGrid } from '@/components/common/ImageGrid';
-import { CategoryCard } from '@/components/common/CategoryCard';
+import { ExploreByCategorySection } from '@/components/common/ExploreByCategorySection';
 import { CreatedWithAIModelsSection } from '@/components/common/CreatedWithAIModelsSection';
 import { EmptyState } from '@/components/common/EmptyState';
 import { Skeleton } from '@/components/ui/Skeleton';
@@ -62,7 +62,7 @@ export default function HomePage() {
   const latest = useLatestImages();
 
   const trendingImages = trending.data?.data ?? [];
-  const featuredCategories = (categories.data?.data ?? []).slice(0, 8);
+  const featuredCategories = (categories.data?.data ?? []).slice(0, 6);
   const latestImages = latest.data?.pages.flatMap((p) => p.data) ?? [];
 
   return (
@@ -121,30 +121,15 @@ export default function HomePage() {
       <CreatedWithAIModelsSection />
 
       {/* ───────────────────── Featured Categories ───────────────────── */}
-      <motion.section {...fadeUp} className="mx-auto max-w-7xl px-6 py-8 md:py-10">
-        <SectionHeader icon={Sparkles} title="Explore by Category" to="/categories" />
-        {categories.isLoading ? (
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <Skeleton key={i} className="aspect-[4/3]" />
-            ))}
-          </div>
-        ) : categories.isError ? (
-          <ErrorBlock message="Couldn't load categories." onRetry={categories.refetch} />
-        ) : featuredCategories.length === 0 ? (
-          <EmptyState
-            icon={ImageOff}
-            title="Categories coming soon"
-            message="We're curating collections — check back shortly."
-          />
-        ) : (
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
-            {featuredCategories.map((c) => (
-              <CategoryCard key={c._id || c.id || c.slug} category={c} />
-            ))}
-          </div>
-        )}
-      </motion.section>
+      <motion.div {...fadeUp}>
+        <ExploreByCategorySection
+          categories={featuredCategories}
+          isLoading={categories.isLoading}
+          isError={categories.isError}
+          onRetry={categories.refetch}
+          to="/categories"
+        />
+      </motion.div>
 
       {/* ───────────────────── Trending Images ───────────────────── */}
       <motion.section {...fadeUp} className="mx-auto max-w-7xl px-6 py-8 md:py-10">

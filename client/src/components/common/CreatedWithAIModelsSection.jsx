@@ -25,7 +25,7 @@ const MODELS = [
 const SCROLL_SPEED = 40;
 
 /** Horizontal glass card: logo left, exact brand name right, vertically centered. */
-function ModelCard({ model, x, dragStartX }) {
+function ModelCard({ model, wasDragged }) {
   return (
     <motion.a
       href={model.url}
@@ -33,12 +33,16 @@ function ModelCard({ model, x, dragStartX }) {
       rel="noopener noreferrer"
       aria-label={`Open ${model.name} website`}
       onClick={(e) => {
-        // Suppress the click that fires at the end of a swipe/drag.
-        if (Math.abs(x.get() - dragStartX.current) > 4) e.preventDefault();
+        // Suppress only the click that ends an actual swipe/drag — a plain
+        // click (no drag) always opens the link.
+        if (wasDragged.current) {
+          e.preventDefault();
+          wasDragged.current = false;
+        }
       }}
       whileHover={{ y: -6 }}
       transition={{ type: 'spring', stiffness: 300, damping: 22 }}
-      className="group relative block h-[96px] w-[300px] shrink-0 select-none"
+      className="group relative block h-[72px] w-[200px] shrink-0 select-none sm:h-[84px] sm:w-[250px] md:h-[96px] md:w-[300px]"
     >
       {/* Subtle glow, revealed on hover. */}
       <div
@@ -49,15 +53,17 @@ function ModelCard({ model, x, dragStartX }) {
       {/* Gradient soft border. */}
       <div className="relative h-full rounded-[20px] bg-gradient-to-br from-white/15 to-white/5 p-px shadow-glass transition-shadow duration-500 group-hover:shadow-glow">
         {/* Clear transparent glass surface. */}
-        <div className="flex h-full items-center gap-5 rounded-[19px] bg-white/[0.02] px-6 backdrop-blur-md transition-colors duration-500 group-hover:bg-white/[0.06]">
+        <div className="flex h-full items-center gap-3 rounded-[19px] bg-white/[0.02] px-4 backdrop-blur-md transition-colors duration-500 group-hover:bg-white/[0.06] sm:gap-4 sm:px-5 md:gap-5 md:px-6">
           <img
             src={model.logo}
             alt={`${model.name} logo`}
             loading="lazy"
             draggable="false"
-            className="h-12 w-12 shrink-0 object-contain"
+            className="h-9 w-9 shrink-0 object-contain sm:h-10 sm:w-10 md:h-12 md:w-12"
           />
-          <span className="text-base font-semibold tracking-tight text-content md:text-xl">{model.name}</span>
+          <span className="truncate text-sm font-semibold tracking-tight text-content sm:text-base md:text-xl">
+            {model.name}
+          </span>
         </div>
       </div>
     </motion.a>
@@ -76,7 +82,7 @@ export function CreatedWithAIModelsSection() {
   const reduceMotion = useReducedMotion();
   const x = useMotionValue(0);
   const trackRef = useRef(null);
-  const dragStartX = useRef(0);
+  const wasDragged = useRef(false);
   const [paused, setPaused] = useState(false);
 
   // Duplicate the list once for a seamless loop (half the track = one full set).
@@ -120,14 +126,19 @@ export function CreatedWithAIModelsSection() {
           dragConstraints={{ left: -10000, right: 10000 }}
           dragElastic={0.04}
           onDragStart={() => {
-            dragStartX.current = x.get();
+            wasDragged.current = false;
             setPaused(true);
           }}
+          onDrag={(_, info) => {
+            // Mark a real drag once the pointer has moved a meaningful distance,
+            // so the trailing click is suppressed but plain taps still open links.
+            if (Math.abs(info.offset.x) > 5) wasDragged.current = true;
+          }}
           onDragEnd={() => setPaused(false)}
-          className="flex w-max cursor-grab gap-5 px-6 will-change-transform active:cursor-grabbing"
+          className="flex w-max cursor-grab gap-3 px-4 will-change-transform active:cursor-grabbing sm:gap-4 sm:px-6 md:gap-5"
         >
           {loop.map((model, i) => (
-            <ModelCard key={`${model.name}-${i}`} model={model} x={x} dragStartX={dragStartX} />
+            <ModelCard key={`${model.name}-${i}`} model={model} wasDragged={wasDragged} />
           ))}
         </motion.div>
       </div>

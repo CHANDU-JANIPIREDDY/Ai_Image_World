@@ -94,11 +94,11 @@ export default function CategoryDetailPage() {
         </Link>
 
         {/* Header */}
-        <header className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <header className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between md:mb-8">
           <div>
-            <h1 className="text-3xl font-bold capitalize">{category?.name || slug}</h1>
+            <h1 className="text-[28px] font-bold capitalize leading-[1.15] md:text-3xl">{category?.name || slug}</h1>
             {category?.description && (
-              <p className="mt-2 max-w-2xl text-content-muted">{category.description}</p>
+              <p className="mt-2 max-w-2xl text-sm leading-relaxed text-content-muted md:text-base">{category.description}</p>
             )}
             {typeof category?.imageCount === 'number' && (
               <p className="mt-1 text-sm text-content-muted">

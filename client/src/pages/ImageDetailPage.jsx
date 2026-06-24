@@ -358,9 +358,9 @@ export default function ImageDetailPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-80px' }}
             transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            className="mt-20"
+            className="mt-12 md:mt-20"
           >
-            <h2 className="mb-6 text-2xl font-semibold">Related Images</h2>
+            <h2 className="mb-4 text-xl font-semibold leading-snug md:mb-6 md:text-2xl">Related Images</h2>
             <div className="columns-2 gap-4 sm:columns-3 lg:columns-4 [&>*]:mb-4">
               {related.map((rel) => (
                 <ImageCard key={rel._id} image={rel} className="break-inside-avoid" />

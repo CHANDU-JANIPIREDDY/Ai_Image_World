@@ -8,7 +8,7 @@ import { cn } from '@/utils/cn';
  */
 function EmptyState({ icon: Icon = SearchX, title = 'Nothing here yet', message, action, className }) {
   return (
-    <div className={cn('flex flex-col items-center justify-center px-6 py-20 text-center', className)}>
+    <div className={cn('flex flex-col items-center justify-center px-6 py-14 text-center md:py-20', className)}>
       <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl glass-panel">
         <Icon className="h-8 w-8 text-content-muted" aria-hidden="true" />
       </div>

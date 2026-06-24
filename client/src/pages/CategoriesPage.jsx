@@ -27,11 +27,11 @@ export default function CategoriesPage() {
       />
 
       <section className="mx-auto max-w-7xl px-6 py-12">
-        <header className="mb-8">
-          <h1 className="flex items-center gap-2 text-3xl font-bold">
-            <Sparkles className="h-7 w-7 text-primary" /> Categories
+        <header className="mb-6 md:mb-8">
+          <h1 className="flex items-center gap-2 text-[28px] font-bold leading-[1.15] md:text-3xl">
+            <Sparkles className="h-6 w-6 text-primary md:h-7 md:w-7" /> Categories
           </h1>
-          <p className="mt-2 text-content-muted">Explore AI-generated images by theme.</p>
+          <p className="mt-2 text-sm leading-relaxed text-content-muted md:text-base">Explore AI-generated images by theme.</p>
         </header>
 
         {isLoading ? (

@@ -23,12 +23,12 @@ export default function TrendingPage() {
       />
 
       <section className="mx-auto max-w-7xl px-6 py-12">
-        <header className="mb-8">
-          <h1 className="flex items-center gap-2 text-3xl font-bold">
-            <TrendingUp className="h-7 w-7 text-primary" />
+        <header className="mb-6 md:mb-8">
+          <h1 className="flex items-center gap-2 text-[28px] font-bold leading-[1.15] md:text-3xl">
+            <TrendingUp className="h-6 w-6 text-primary md:h-7 md:w-7" />
             <span className="gradient-text">Trending Now</span>
           </h1>
-          <p className="mt-2 text-content-muted">
+          <p className="mt-2 text-sm leading-relaxed text-content-muted md:text-base">
             The most popular AI-generated images, ranked by what the community is exploring today.
           </p>
         </header>
