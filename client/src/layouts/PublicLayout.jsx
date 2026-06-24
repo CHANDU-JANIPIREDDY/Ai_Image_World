@@ -33,7 +33,7 @@ function PublicLayout() {
   }, []);
 
   return (
-    <div className="flex min-h-screen flex-col bg-background bg-glow-radial">
+    <div className="flex min-h-screen flex-col bg-gradient-to-br from-[#0B0F19] via-[#1E1B4B] to-[#0B0F19]">
       <ScrollToTop />
       <Navbar />
 

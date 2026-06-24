@@ -44,7 +44,7 @@ function Navbar() {
         {/* Logo */}
         <Link to="/" className="shrink-0 text-lg font-bold tracking-tight text-white">
           <span className="bg-brand-gradient bg-clip-text text-transparent">◆</span>{' '}
-          <span className="font-normal text-white/90">AI</span> Image World
+          <span className="bg-brand-gradient bg-clip-text font-extrabold text-transparent">AI</span>&nbsp; Image World
         </Link>
 
         {/* Desktop links */}

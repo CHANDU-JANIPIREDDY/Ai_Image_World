@@ -12,6 +12,7 @@ const CategoryDetailPage = lazy(() => import('@/pages/CategoryDetailPage'));
 const ImageDetailPage = lazy(() => import('@/pages/ImageDetailPage'));
 const SearchPage = lazy(() => import('@/pages/SearchPage'));
 const TrendingPage = lazy(() => import('@/pages/TrendingPage'));
+const GalleryPage = lazy(() => import('@/pages/GalleryPage'));
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'));
 
 // Auth pages
@@ -51,6 +52,7 @@ function AppRoutes() {
         <Route path="/image/:slug" element={<ImageDetailPage />} />
         <Route path="/search" element={<SearchPage />} />
         <Route path="/trending" element={<TrendingPage />} />
+        <Route path="/gallery" element={<GalleryPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
 

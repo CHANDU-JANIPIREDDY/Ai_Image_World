@@ -8,6 +8,7 @@ import { ImageCard } from '@/components/common/ImageCard';
 import { ImageGrid } from '@/components/common/ImageGrid';
 import { ExploreByCategorySection } from '@/components/common/ExploreByCategorySection';
 import { CreatedWithAIModelsSection } from '@/components/common/CreatedWithAIModelsSection';
+import { SwipeImageCards } from '@/components/common/SwipeImageCards';
 import { EmptyState } from '@/components/common/EmptyState';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { Button } from '@/components/ui/Button';
@@ -70,7 +71,7 @@ export default function HomePage() {
       <Seo description="Explore thousands of stunning AI-generated images and copy production-ready prompts — all in one beautifully curated gallery." />
 
       {/* ─────────────────── Hero — butterfly video + centered title ─────────────────── */}
-      <section className="relative h-screen min-h-screen w-full overflow-hidden">
+      <section className="relative h-screen min-h-screen w-full overflow-hidden bg-gradient-to-br from-[#15102e] via-[#0B1020] to-[#0a1f2a]">
         {/* Fullscreen looping video background */}
         <video
           className="absolute inset-0 h-full w-full object-cover"
@@ -84,8 +85,15 @@ export default function HomePage() {
           tabIndex={-1}
         />
 
-        {/* Very light overlay for readability (butterflies stay clearly visible) */}
-        <div aria-hidden="true" className="absolute inset-0 bg-black/20" />
+        {/* Gentle brand-color wash — gives the video a purple→cyan tint while it
+            keeps playing and stays clearly visible. `mix-blend-soft-light` only
+            nudges the tones, so the footage isn't darkened. */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-gradient-to-br from-[#8B5CF6]/30 via-transparent to-[#06B6D4]/30 mix-blend-soft-light"
+        />
+        {/* Very light overlay for readability (subject stays clearly visible) */}
+        <div aria-hidden="true" className="absolute inset-0 bg-black/15" />
         {/* Subtle bottom fade to blend the hero into the page below */}
         <div
           aria-hidden="true"
@@ -119,6 +127,9 @@ export default function HomePage() {
 
       {/* ───────────────────── Created With AI Models ───────────────────── */}
       <CreatedWithAIModelsSection />
+
+      {/* ───────────────────── Swipe to Explore (interactive deck) ───────────────────── */}
+      <SwipeImageCards />
 
       {/* ───────────────────── Featured Categories ───────────────────── */}
       <motion.div {...fadeUp}>

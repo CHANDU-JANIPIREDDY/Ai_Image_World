@@ -47,6 +47,7 @@ function SearchBar({ className, autoFocus, placeholder = 'Search images, styles,
           autoFocus={autoFocus}
           placeholder={placeholder}
           aria-label="Search"
+          className="placeholder:text-xs"
           leftIcon={<Search className="h-5 w-5" />}
           onChange={(e) => {
             setValue(e.target.value);

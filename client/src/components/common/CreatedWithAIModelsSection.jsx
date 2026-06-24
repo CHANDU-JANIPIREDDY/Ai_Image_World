@@ -53,7 +53,7 @@ function ModelCard({ model, wasDragged }) {
       {/* Gradient soft border. */}
       <div className="relative h-full rounded-[20px] bg-gradient-to-br from-white/15 to-white/5 p-px shadow-glass transition-shadow duration-500 group-hover:shadow-glow">
         {/* Clear transparent glass surface. */}
-        <div className="flex h-full items-center gap-3 rounded-[19px] bg-white/[0.02] px-4 backdrop-blur-md transition-colors duration-500 group-hover:bg-white/[0.06] sm:gap-4 sm:px-5 md:gap-5 md:px-6">
+        <div className="flex h-full items-center gap-3 rounded-[19px] bg-transparent px-4 backdrop-blur-md transition-colors duration-500 group-hover:bg-white/[0.04] sm:gap-4 sm:px-5 md:gap-5 md:px-6">
           <img
             src={model.logo}
             alt={`${model.name} logo`}
