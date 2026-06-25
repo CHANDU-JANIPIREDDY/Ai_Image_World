@@ -26,6 +26,7 @@ const SORTS = {
   oldest: { publishedAt: 1, _id: 1 },
   popular: { views: -1, publishedAt: -1 },
   most_copied: { promptCopyCount: -1, publishedAt: -1 },
+  most_liked: { likes: -1, publishedAt: -1 },
 };
 
 /* --------------------------------- Helpers --------------------------------- */
@@ -302,6 +303,41 @@ async function incrementPromptCopyCount(id) {
   return { promptCopyCount: image.promptCopyCount };
 }
 
+/* --------------------------------- Likes ----------------------------------- */
+
+/**
+ * Increment an image's like counter.
+ * @returns {Promise<{ likes: number }>}
+ */
+async function likeImage(id) {
+  const image = await Image.findByIdAndUpdate(
+    id,
+    { $inc: { likes: 1 } },
+    { new: true, projection: 'likes' }
+  ).lean();
+  if (!image) throw ApiError.notFound('Image not found', 'NOT_FOUND');
+  return { likes: image.likes };
+}
+
+/**
+ * Decrement an image's like counter, clamped at zero (never goes negative).
+ * @returns {Promise<{ likes: number }>}
+ */
+async function unlikeImage(id) {
+  // Only decrement when there is at least one like — keeps the counter ≥ 0 atomically.
+  const decremented = await Image.findOneAndUpdate(
+    { _id: id, likes: { $gt: 0 } },
+    { $inc: { likes: -1 } },
+    { new: true, projection: 'likes' }
+  ).lean();
+  if (decremented) return { likes: decremented.likes };
+
+  // No decrement happened: either the image is missing or it was already at 0.
+  const existing = await Image.findById(id, 'likes').lean();
+  if (!existing) throw ApiError.notFound('Image not found', 'NOT_FOUND');
+  return { likes: existing.likes };
+}
+
 module.exports = {
   createImage,
   getImages,
@@ -311,4 +347,6 @@ module.exports = {
   updateImage,
   deleteImage,
   incrementPromptCopyCount,
+  likeImage,
+  unlikeImage,
 };

@@ -17,6 +17,7 @@ const SORTS = [
   { value: 'oldest', label: 'Oldest' },
   { value: 'popular', label: 'Most viewed' },
   { value: 'most_copied', label: 'Most copied' },
+  { value: 'most_liked', label: 'Most liked' },
 ];
 
 const PAGE_SIZE = 24;

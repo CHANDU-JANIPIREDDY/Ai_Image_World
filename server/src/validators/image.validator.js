@@ -19,7 +19,7 @@ const boolish = z
   .transform((v) => v === true || v === 'true');
 
 const STATUS = ['draft', 'published', 'scheduled'];
-const SORTS = ['latest', 'oldest', 'popular', 'most_copied'];
+const SORTS = ['latest', 'oldest', 'popular', 'most_copied', 'most_liked'];
 
 const tagsField = z
   .array(z.string().min(1).max(30).trim())

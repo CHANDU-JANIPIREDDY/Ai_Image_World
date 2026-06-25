@@ -69,6 +69,18 @@ const copyPrompt = asyncHandler(async (req, res) => {
   return ApiResponse.send(res, { message: 'Copy recorded', data });
 });
 
+/** POST /images/:id/like  (Public) — increment like count */
+const like = asyncHandler(async (req, res) => {
+  const data = await imageService.likeImage(req.params.id);
+  return ApiResponse.send(res, { message: 'Like recorded', data });
+});
+
+/** POST /images/:id/unlike  (Public) — decrement like count */
+const unlike = asyncHandler(async (req, res) => {
+  const data = await imageService.unlikeImage(req.params.id);
+  return ApiResponse.send(res, { message: 'Like removed', data });
+});
+
 /** POST /images  (Admin) */
 const create = asyncHandler(async (req, res) => {
   const image = await imageService.createImage(req.body, req.user.id);
@@ -94,4 +106,15 @@ const remove = asyncHandler(async (req, res) => {
   return ApiResponse.send(res, { message: 'Image deleted' });
 });
 
-module.exports = { list, trending, latest, getBySlug, copyPrompt, create, update, remove };
+module.exports = {
+  list,
+  trending,
+  latest,
+  getBySlug,
+  copyPrompt,
+  like,
+  unlike,
+  create,
+  update,
+  remove,
+};

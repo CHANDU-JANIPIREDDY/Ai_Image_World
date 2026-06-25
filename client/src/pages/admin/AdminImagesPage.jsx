@@ -102,6 +102,7 @@ export default function AdminImagesPage() {
           <option value="oldest">Oldest</option>
           <option value="popular">Most viewed</option>
           <option value="most_copied">Most copied</option>
+          <option value="most_liked">Most liked</option>
         </select>
       </div>
 

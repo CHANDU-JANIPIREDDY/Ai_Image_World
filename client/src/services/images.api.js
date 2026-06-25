@@ -15,6 +15,10 @@ export const getImageBySlug = (slug) => api.get(`/images/${slug}`);
 
 export const copyPrompt = (id) => api.post(`/images/${id}/copy`);
 
+export const likeImage = (id) => api.post(`/images/${id}/like`);
+
+export const unlikeImage = (id) => api.post(`/images/${id}/unlike`);
+
 /* ------------------------------- Admin (auth) ------------------------------- */
 
 export const createImage = (payload) => api.post('/images', payload);

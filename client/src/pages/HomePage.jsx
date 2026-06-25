@@ -4,11 +4,11 @@ import { TrendingUp, Clock, ArrowRight, AlertCircle, ImageOff } from 'lucide-rea
 
 import heroVideo from '@/assets/Homepage.mp4';
 import { Seo } from '@/components/common/Seo';
-import { ImageCard } from '@/components/common/ImageCard';
 import { ImageGrid } from '@/components/common/ImageGrid';
 import { ExploreByCategorySection } from '@/components/common/ExploreByCategorySection';
 import { CreatedWithAIModelsSection } from '@/components/common/CreatedWithAIModelsSection';
 import { SwipeImageCards } from '@/components/common/SwipeImageCards';
+import { TrendingMarquee } from '@/components/common/TrendingMarquee';
 import { EmptyState } from '@/components/common/EmptyState';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { Button } from '@/components/ui/Button';
@@ -160,15 +160,7 @@ export default function HomePage() {
             message="Popular images will appear here as the community explores."
           />
         ) : (
-          <div className="no-scrollbar -mx-2 flex gap-4 overflow-x-auto px-2 pb-2">
-            {trendingImages.map((image) => (
-              <ImageCard
-                key={image._id || image.id}
-                image={image}
-                className="w-44 shrink-0 sm:w-52"
-              />
-            ))}
-          </div>
+          <TrendingMarquee images={trendingImages} />
         )}
       </motion.section>
 

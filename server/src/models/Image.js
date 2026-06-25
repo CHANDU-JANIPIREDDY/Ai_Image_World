@@ -36,6 +36,7 @@ const imageSchema = new Schema(
     // Engagement counters (denormalized hot paths, updated via $inc).
     views: { type: Number, default: 0, min: 0 },
     promptCopyCount: { type: Number, default: 0, min: 0 },
+    likes: { type: Number, default: 0, min: 0 },
 
     featured: { type: Boolean, default: false },
 
@@ -69,6 +70,7 @@ imageSchema.index(
 
 imageSchema.index({ status: 1, publishedAt: -1 }); // latest feed
 imageSchema.index({ status: 1, views: -1, publishedAt: -1 }); // trending / most-viewed
+imageSchema.index({ status: 1, likes: -1, publishedAt: -1 }); // most-liked
 imageSchema.index({ category: 1, status: 1, publishedAt: -1 }); // category listings
 imageSchema.index({ featured: 1, status: 1, publishedAt: -1 }); // homepage featured
 imageSchema.index({ status: 1, scheduledAt: 1 }); // scheduled-publish job

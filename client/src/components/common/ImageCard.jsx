@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Eye, Copy } from 'lucide-react';
+import { Eye, Copy, Heart } from 'lucide-react';
 
 import { cn } from '@/utils/cn';
 import { formatCount } from '@/utils/format';
@@ -45,6 +45,9 @@ function ImageCard({ image, className, onClick }) {
             </span>
             <span className="inline-flex items-center gap-1">
               <Copy className="h-3.5 w-3.5" /> {formatCount(image.promptCopyCount)}
+            </span>
+            <span className="inline-flex items-center gap-1">
+              <Heart className="h-3.5 w-3.5" /> {formatCount(image.likes)}
             </span>
           </div>
         </div>

@@ -8,6 +8,8 @@
  *   GET    /images/latest     Public
  *   GET    /images/:slug      Public (optionalAuth; increments views)
  *   POST   /images/:id/copy   Public (rate-limited)
+ *   POST   /images/:id/like   Public (rate-limited)
+ *   POST   /images/:id/unlike Public (rate-limited)
  *   POST   /images            Admin
  *   PUT    /images/:id        Admin
  *   DELETE /images/:id        Admin
@@ -48,6 +50,20 @@ router.post(
   actionLimiter,
   validate(imageIdSchema),
   imageController.copyPrompt
+);
+
+router.post(
+  '/:id/like',
+  actionLimiter,
+  validate(imageIdSchema),
+  imageController.like
+);
+
+router.post(
+  '/:id/unlike',
+  actionLimiter,
+  validate(imageIdSchema),
+  imageController.unlike
 );
 
 /* --------------------------------- Admin ---------------------------------- */

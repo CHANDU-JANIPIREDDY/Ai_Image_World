@@ -17,6 +17,7 @@ import { Seo } from '@/components/common/Seo';
 import { ImageCard } from '@/components/common/ImageCard';
 import { TopImageModelsSection } from '@/components/common/TopImageModelsSection';
 import { CopyPromptButton } from '@/components/common/CopyPromptButton';
+import { LikeButton } from '@/components/common/LikeButton';
 import { EmptyState } from '@/components/common/EmptyState';
 import { ErrorBlock } from '@/components/common/ErrorBlock';
 import { Badge } from '@/components/ui/Badge';
@@ -323,12 +324,13 @@ export default function ImageDetailPage() {
               )}
             </div>
 
-            {/* Copy action */}
-            <motion.div variants={fadeUp}>
+            {/* Like + Copy actions */}
+            <motion.div variants={fadeUp} className="flex items-stretch gap-3">
+              <LikeButton imageId={image._id} initialLikes={image.likes} />
               <CopyPromptButton
                 prompt={image.prompt}
                 imageId={image._id}
-                className="w-full"
+                className="flex-1"
               />
             </motion.div>
 

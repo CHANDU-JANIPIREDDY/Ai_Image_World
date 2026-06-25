@@ -94,6 +94,49 @@
     @apply bg-brand-gradient bg-clip-text text-transparent;
   }
 
+  /* "Trending Now" cards — a green glow that slowly travels around the entire
+     card border (conic gradient masked to a thin ring, rotated via
+     --border-angle). Mobile only; desktop shows no accent. */
+  .trending-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    border-radius: inherit;
+    padding: 2px; /* ring thickness */
+    pointer-events: none;
+    display: none;
+    background: conic-gradient(
+      from var(--border-angle),
+      transparent 0%,
+      transparent 60%,
+      #22c55e 80%,
+      #aaffd0 90%,
+      #22c55e 97%,
+      transparent 100%
+    );
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    filter: drop-shadow(0 0 6px rgba(34, 197, 94, 0.85));
+    animation: border-angle-spin 10s linear infinite; /* slow sweep */
+  }
+
+  @media (max-width: 767px) {
+    .trending-card::after {
+      display: block;
+    }
+  }
+
+  /* Honor reduced-motion: keep the green ring static (no travel). */
+  @media (prefers-reduced-motion: reduce) {
+    .trending-card::after {
+      animation: none;
+    }
+  }
+
   /* Fully hidden scrollbar — keeps wheel/touch scrolling, removes track + thumb.
      Used by the prompt cards for a clean, premium look. */
   .no-scrollbar {

@@ -12,6 +12,8 @@ import {
   getLatestImages,
   getImageBySlug,
   copyPrompt,
+  likeImage,
+  unlikeImage,
   createImage,
   updateImage,
   deleteImage,
@@ -85,6 +87,19 @@ export function useCopyPrompt() {
       queryClient.invalidateQueries({ queryKey: imageKeys.all });
     },
   });
+}
+
+/**
+ * Like / unlike an image. The button owns the optimistic count + persisted
+ * liked state, so these mutations are fire-and-forget — we deliberately do NOT
+ * invalidate the detail query (that would re-trigger the server view increment).
+ */
+export function useLikeImage() {
+  return useMutation({ mutationFn: (id) => likeImage(id) });
+}
+
+export function useUnlikeImage() {
+  return useMutation({ mutationFn: (id) => unlikeImage(id) });
 }
 
 /* ------------------------------ Admin management ----------------------------- */
