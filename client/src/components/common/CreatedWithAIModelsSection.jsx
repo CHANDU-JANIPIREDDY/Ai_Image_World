@@ -44,24 +44,35 @@ function ModelCard({ model, wasDragged }) {
       transition={{ type: 'spring', stiffness: 300, damping: 22 }}
       className="group relative block h-[72px] w-[200px] shrink-0 select-none sm:h-[84px] sm:w-[250px] md:h-[96px] md:w-[300px]"
     >
-      {/* Subtle glow, revealed on hover. */}
+      {/* Green neon glow, revealed on hover. */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -inset-1 rounded-[24px] bg-brand-gradient opacity-0 blur-xl transition-opacity duration-500 group-hover:opacity-30"
+        className="pointer-events-none absolute -inset-1 rounded-[24px] bg-[radial-gradient(circle,rgba(0,255,140,0.35),transparent_70%)] opacity-0 blur-xl transition-opacity duration-500 group-hover:opacity-100"
       />
 
-      {/* Gradient soft border. */}
-      <div className="relative h-full rounded-[20px] bg-gradient-to-br from-white/15 to-white/5 p-px shadow-glass transition-shadow duration-500 group-hover:shadow-glow">
-        {/* Clear transparent glass surface. */}
-        <div className="flex h-full items-center gap-3 rounded-[19px] bg-transparent px-4 backdrop-blur-md transition-colors duration-500 group-hover:bg-white/[0.04] sm:gap-4 sm:px-5 md:gap-5 md:px-6">
+      {/* Animated green border that "loads" around the entire card on hover. */}
+      <div
+        aria-hidden="true"
+        className="neon-loader-border pointer-events-none absolute inset-0 z-20 rounded-[20px] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+      />
+
+      {/* Card surface — green glow on hover (Motion-Sync style). */}
+      <div className="relative h-full overflow-hidden rounded-[20px] border-2 border-white/10 shadow-glass transition-[box-shadow] duration-[350ms] ease-[cubic-bezier(0.22,0.61,0.36,1)] group-hover:shadow-[0_0_18px_rgba(0,255,140,0.35),0_0_40px_rgba(0,255,140,0.20),0_12px_40px_rgba(0,0,0,0.45)]">
+        {/* Background brighten — dark green gradient fades in on hover. */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,#02150F_0%,#032A1B_40%,#0A1B17_100%)] opacity-0 transition-opacity duration-[350ms] ease-[cubic-bezier(0.22,0.61,0.36,1)] group-hover:opacity-100"
+        />
+        {/* Glass surface + content. */}
+        <div className="relative z-10 flex h-full items-center gap-3 bg-transparent px-4 backdrop-blur-md sm:gap-4 sm:px-5 md:gap-5 md:px-6">
           <img
             src={model.logo}
             alt={`${model.name} logo`}
             loading="lazy"
             draggable="false"
-            className="h-9 w-9 shrink-0 object-contain sm:h-10 sm:w-10 md:h-12 md:w-12"
+            className="h-9 w-9 shrink-0 object-contain transition-transform duration-[450ms] ease-out group-hover:scale-[1.08] sm:h-10 sm:w-10 md:h-12 md:w-12"
           />
-          <span className="truncate text-sm font-semibold tracking-tight text-content sm:text-base md:text-xl">
+          <span className="truncate text-sm font-semibold tracking-tight text-content transition-colors duration-300 group-hover:text-[#00FF7F] sm:text-base md:text-xl">
             {model.name}
           </span>
         </div>

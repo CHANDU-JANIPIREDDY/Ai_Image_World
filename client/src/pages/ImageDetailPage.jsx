@@ -15,6 +15,7 @@ import {
 
 import { Seo } from '@/components/common/Seo';
 import { ImageCard } from '@/components/common/ImageCard';
+import { TopImageModelsSection } from '@/components/common/TopImageModelsSection';
 import { CopyPromptButton } from '@/components/common/CopyPromptButton';
 import { EmptyState } from '@/components/common/EmptyState';
 import { ErrorBlock } from '@/components/common/ErrorBlock';
@@ -350,6 +351,12 @@ export default function ImageDetailPage() {
             )}
           </div>
         </motion.div>
+
+        {/* Top image-generation models — Motion-Sync cards (ChatGPT, Gemini, Midjourney).
+            Full-bleed wrapper so the panel can be wider than the page's max-w-7xl. */}
+        <div className="mt-12 w-screen mx-[calc(50%-50vw)] md:mt-20">
+          <TopImageModelsSection />
+        </div>
 
         {/* ----------------------------- Related ---------------------------- */}
         {related.length > 0 && (

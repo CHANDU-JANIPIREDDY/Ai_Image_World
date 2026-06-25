@@ -3,6 +3,44 @@
 @tailwind utilities;
 
 /* ---------------------------------------------------------------------------
+   Animated neon "loading" border — a green conic gradient that sweeps around
+   the whole card perimeter. Masked to the padding ring so the card interior
+   stays transparent. Used on hover (see .neon-loader-border consumers).
+--------------------------------------------------------------------------- */
+@property --border-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes border-angle-spin {
+  to {
+    --border-angle: 360deg;
+  }
+}
+
+@layer components {
+  .neon-loader-border {
+    padding: 2px;
+    background: conic-gradient(
+      from var(--border-angle),
+      transparent 0%,
+      transparent 55%,
+      #00ff7f 78%,
+      #aaffd0 88%,
+      #00ff7f 96%,
+      transparent 100%
+    );
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: border-angle-spin 1.4s linear infinite;
+  }
+}
+
+/* ---------------------------------------------------------------------------
    Global CSS variables — palette as RGB channels (consumed by tailwind.config).
    Dark theme is the default and only theme for v1.
 --------------------------------------------------------------------------- */
