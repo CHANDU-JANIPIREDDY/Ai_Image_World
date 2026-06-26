@@ -16,8 +16,27 @@ export const setAccessToken = (token) => {
   else localStorage.removeItem(TOKEN_KEY);
 };
 
+/**
+ * Resolve the API base URL so it ALWAYS targets the backend's /api/v1, no matter
+ * how VITE_API_URL is configured on the host (Vercel). This prevents the classic
+ * 404s where requests hit `https://api.onrender.com/categories` instead of
+ * `https://api.onrender.com/api/v1/categories`.
+ *
+ *   unset                              → '/api/v1'            (Vite proxies in dev)
+ *   https://api.onrender.com           → …/api/v1            (suffix appended)
+ *   https://api.onrender.com/          → …/api/v1            (trailing slash trimmed)
+ *   https://api.onrender.com/api/v1    → …/api/v1            (left as-is)
+ *   https://api.onrender.com/api/v1/   → …/api/v1            (trailing slash trimmed)
+ */
+function resolveBaseUrl() {
+  const raw = (import.meta.env.VITE_API_URL || '').trim();
+  if (!raw) return '/api/v1';
+  const trimmed = raw.replace(/\/+$/, ''); // drop any trailing slash(es)
+  return /\/api\/v\d+$/.test(trimmed) ? trimmed : `${trimmed}/api/v1`;
+}
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '/api/v1',
+  baseURL: resolveBaseUrl(),
   timeout: 15000,
   withCredentials: true, // send/receive the httpOnly refresh cookie
   headers: { 'Content-Type': 'application/json' },

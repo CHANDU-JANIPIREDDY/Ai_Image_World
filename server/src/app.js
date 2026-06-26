@@ -40,12 +40,37 @@ app.use(helmet());
 
 // CORS — restricted to the known client origin(s). Credentials enabled so the
 // httpOnly refresh-token cookie (API Spec §1.4) can be sent cross-origin.
-app.use(
-  cors({
-    origin: env.allowedOrigins,
-    credentials: true,
-  })
-);
+//
+// A function (not a static array) is used so we can: tolerate trailing slashes,
+// allow non-browser clients (no Origin header), and accept Vercel preview/prod
+// deployments (*.vercel.app) without having to redeploy for every preview URL.
+const normalizeOrigin = (o) => (o || '').replace(/\/+$/, '');
+const allowedOrigins = env.allowedOrigins.map(normalizeOrigin);
+
+const corsOptions = {
+  origin(origin, callback) {
+    // Same-origin / curl / server-to-server requests have no Origin header.
+    if (!origin) return callback(null, true);
+
+    const candidate = normalizeOrigin(origin);
+    let isVercel = false;
+    try {
+      isVercel = new URL(origin).hostname.endsWith('.vercel.app');
+    } catch {
+      isVercel = false;
+    }
+
+    if (allowedOrigins.includes(candidate) || isVercel) {
+      return callback(null, true);
+    }
+    return callback(new Error(`Origin not allowed by CORS: ${origin}`));
+  },
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
+// Ensure CORS preflight (OPTIONS) is answered for every route.
+app.options('*', cors(corsOptions));
 
 // Gzip responses for smaller payloads.
 app.use(compression());
