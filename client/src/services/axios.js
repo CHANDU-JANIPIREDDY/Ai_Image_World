@@ -34,6 +34,8 @@ function resolveBaseUrl() {
   const trimmed = raw.replace(/\/+$/, ''); // drop any trailing slash(es)
   return /\/api\/v\d+$/.test(trimmed) ? trimmed : `${trimmed}/api/v1`;
 }
+console.log("VITE_API_URL:", import.meta.env.VITE_API_URL);
+console.log("Resolved Base URL:", resolveBaseUrl());
 
 const api = axios.create({
   baseURL: resolveBaseUrl(),
