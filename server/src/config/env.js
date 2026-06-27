@@ -65,6 +65,11 @@ const envSchema = z.object({
   // CORS — comma-separated list of allowed client origins
   CLIENT_ORIGIN: z.string().default('http://localhost:5173'),
 
+  // Gemini (chatbot) — optional. When unset, the chatbot falls back to a
+  // built-in rule-based reply so the site still works without an API key.
+  GEMINI_API_KEY: z.string().default(''),
+  GEMINI_MODEL: z.string().default('gemini-2.0-flash'),
+
   // Optional cache/queue layer
   REDIS_URL: z.string().optional(),
 

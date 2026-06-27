@@ -16,6 +16,7 @@ const imageRoutes = require('./image.routes');
 const uploadRoutes = require('./upload.routes');
 const analyticsRoutes = require('./analytics.routes');
 const searchRoutes = require('./search.routes');
+const chatbotRoutes = require('./chatbot.routes');
 
 const router = express.Router();
 
@@ -25,5 +26,6 @@ router.use('/images', imageRoutes);
 router.use('/upload', uploadRoutes);
 router.use('/analytics', analyticsRoutes);
 router.use('/search', searchRoutes);
+router.use('/chatbot', chatbotRoutes);
 
 module.exports = router;

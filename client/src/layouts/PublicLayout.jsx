@@ -3,6 +3,7 @@ import { Outlet, useLocation } from 'react-router-dom';
 
 import { Navbar } from '@/components/common/Navbar';
 import { Footer } from '@/components/common/Footer';
+import { Chatbot } from '@/components/common/Chatbot/Chatbot';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 import { Spinner } from '@/components/ui/Spinner';
 import { cn } from '@/utils/cn';
@@ -53,6 +54,9 @@ function PublicLayout() {
       </main>
 
       <Footer />
+
+      {/* Site-scoped prompt assistant (floating, all public pages). */}
+      <Chatbot />
     </div>
   );
 }

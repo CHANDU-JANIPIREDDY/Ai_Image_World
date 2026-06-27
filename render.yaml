@@ -41,6 +41,11 @@ services:
       # Comma-separated allowed client origins (your Vercel URL).
       - key: CLIENT_ORIGIN
         sync: false
+      # Gemini (chatbot) — set the API key in the Render dashboard.
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        value: gemini-2.0-flash
       # Initial superadmin (used by `npm run seed:admin` / seed:content).
       - key: SEED_ADMIN_EMAIL
         sync: false
